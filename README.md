@@ -1,6 +1,6 @@
 # NexVision Offline Phishing Analyzer
 
-[![CI](https://github.com/NexvisionLab/offline-phishing-analyzer/actions/workflows/ci.yml/badge.svg)](https://github.com/NexvisionLab/offline-phishing-analyzer/actions/workflows/ci.yml)
+[![CI](https://github.com/NexvisionLab/NexVision-PhishIntel/actions/workflows/ci.yml/badge.svg)](https://github.com/NexvisionLab/NexVision-PhishIntel/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB)](https://www.python.org/)
 [![License: PolyForm Noncommercial 1.0.0](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue)](LICENSE.md)
 
@@ -36,8 +36,8 @@ Inputs are processed locally. Extracted destinations are treated as strings and 
 ## Installation
 
 ```bash
-git clone https://github.com/NexvisionLab/offline-phishing-analyzer.git
-cd offline-phishing-analyzer
+git clone https://github.com/NexvisionLab/NexVision-PhishIntel.git
+cd NexVision-PhishIntel
 python -m venv .venv
 . .venv/bin/activate
 python -m pip install .

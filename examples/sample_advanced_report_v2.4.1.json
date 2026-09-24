@@ -1,0 +1,424 @@
+{
+  "version": "2.4.1",
+  "input_type": "eml",
+  "score": 100,
+  "risk": "high",
+  "classification": "HTML smuggling or credential capture",
+  "confidence": "high",
+  "summary": "Strong phishing indicators were identified. Do not reply, open links, or provide credentials.",
+  "findings": [
+    {
+      "code": "CONTENT_PATTERN",
+      "title": "Requests account verification",
+      "severity": "medium",
+      "points": 18,
+      "evidence": "verify your login",
+      "source": "content:en:cred.en.verify",
+      "status": "observed"
+    },
+    {
+      "code": "CONTENT_PATTERN",
+      "title": "Unexpected subscription renewal or refund",
+      "severity": "medium",
+      "points": 18,
+      "evidence": "subscription renewed for USD 499. Call",
+      "source": "content:en:subscription.en",
+      "status": "observed"
+    },
+    {
+      "code": "SOCIAL_ENGINEERING",
+      "title": "Uses urgency or time pressure",
+      "severity": "low",
+      "points": 8,
+      "evidence": "Urgent",
+      "source": "content",
+      "status": "observed"
+    },
+    {
+      "code": "ADVANCED_TACTIC",
+      "title": "Requests OAuth application consent",
+      "severity": "medium",
+      "points": 28,
+      "evidence": "Approve the MFA login request, then grant permission access for this application to read your mailbox",
+      "source": "advanced:oauth.consent",
+      "status": "observed"
+    },
+    {
+      "code": "ADVANCED_TACTIC",
+      "title": "Uses a QR code for authentication or payment action",
+      "severity": "medium",
+      "points": 24,
+      "evidence": "Scan the QR code to verify your login",
+      "source": "advanced:qr.login",
+      "status": "observed"
+    },
+    {
+      "code": "CALLBACK_PHISHING",
+      "title": "Invoice, refund, or security lure directs the recipient to call",
+      "severity": "high",
+      "points": 30,
+      "evidence": "Phone number redacted; callback context observed",
+      "source": "advanced:callback",
+      "status": "observed"
+    },
+    {
+      "code": "HTML_SMUGGLING",
+      "title": "HTML contains client-side payload construction or download behavior",
+      "severity": "high",
+      "points": 38,
+      "evidence": "atob(",
+      "source": "advanced:html",
+      "status": "observed"
+    },
+    {
+      "code": "HTML_CREDENTIAL_FORM",
+      "title": "Email HTML contains a password or credential input",
+      "severity": "high",
+      "points": 32,
+      "evidence": "<input type=\"email\"",
+      "source": "advanced:html",
+      "status": "observed"
+    },
+    {
+      "code": "DISPLAY_NAME_BRAND_IMPERSONATION",
+      "title": "Display name claims a brand not aligned with the sender domain",
+      "severity": "high",
+      "points": 24,
+      "evidence": "Claimed: microsoft; sender domain: unrelated-example.test",
+      "source": "headers",
+      "status": "observed"
+    },
+    {
+      "code": "MESSAGE_ID_DOMAIN_MISMATCH",
+      "title": "Message-ID domain differs from the visible sender domain",
+      "severity": "low",
+      "points": 5,
+      "evidence": "From: unrelated-example.test; Message-ID: mailer-other.test",
+      "source": "headers",
+      "status": "observed"
+    },
+    {
+      "code": "MULTI_TACTIC_CORROBORATION",
+      "title": "Multiple advanced phishing tactics corroborate one another",
+      "severity": "high",
+      "points": 14,
+      "evidence": "callback, headers, html, oauth.consent, qr.login",
+      "source": "advanced:correlation",
+      "status": "observed"
+    },
+    {
+      "code": "ACTIVE_HTML_DESTINATION",
+      "title": "HTML contains form action",
+      "severity": "medium",
+      "points": 10,
+      "evidence": "https://credential-capture.test/session",
+      "source": "html",
+      "status": "observed"
+    }
+  ],
+  "links": [
+    {
+      "display_url": "https://accounts-example.test/continue?next=https%253A%252F%252Fcredential-capture.test%252Fsignin",
+      "normalized_url": "https://accounts-example.test/continue?next=https%253A%252F%252Fcredential-capture.test%252Fsignin",
+      "host": "accounts-example.test",
+      "score": 39,
+      "risk": "suspicious",
+      "findings": [
+        {
+          "code": "PHISHING_TERMS",
+          "title": "Link contains account or payment terms",
+          "severity": "medium",
+          "points": 7,
+          "evidence": "signin",
+          "source": "url",
+          "status": "observed"
+        },
+        {
+          "code": "NESTED_REDIRECT",
+          "title": "Link contains a nested redirect destination",
+          "severity": "medium",
+          "points": 12,
+          "evidence": "next -> credential-capture.test",
+          "source": "url",
+          "status": "observed"
+        },
+        {
+          "code": "CROSS_DOMAIN_REDIRECT",
+          "title": "Nested redirect crosses organizational domains",
+          "severity": "high",
+          "points": 20,
+          "evidence": "accounts-example.test -> credential-capture.test",
+          "source": "url",
+          "status": "observed"
+        }
+      ],
+      "reputation": {
+        "status": "not_evaluated",
+        "reason": "no_local_feeds_configured"
+      },
+      "registrable_domain": "accounts-example.test",
+      "rank_score": 39,
+      "selected_for_deep_inspection": true,
+      "osint": {
+        "status": "not_evaluated",
+        "reason": "network_disabled",
+        "requested": false,
+        "cache": "not_used"
+      }
+    },
+    {
+      "display_url": "https://credential-capture.test/session",
+      "normalized_url": "https://credential-capture.test/session",
+      "host": "credential-capture.test",
+      "score": 0,
+      "risk": "low",
+      "findings": [],
+      "reputation": {
+        "status": "not_evaluated",
+        "reason": "no_local_feeds_configured"
+      },
+      "registrable_domain": "credential-capture.test",
+      "rank_score": 0,
+      "selected_for_deep_inspection": true,
+      "osint": {
+        "status": "not_evaluated",
+        "reason": "network_disabled",
+        "requested": false,
+        "cache": "not_used"
+      }
+    },
+    {
+      "display_url": "https://example.org/help",
+      "normalized_url": "https://example.org/help",
+      "host": "example.org",
+      "score": 0,
+      "risk": "low",
+      "findings": [],
+      "reputation": {
+        "status": "not_evaluated",
+        "reason": "no_local_feeds_configured"
+      },
+      "registrable_domain": "example.org",
+      "rank_score": 0,
+      "selected_for_deep_inspection": true,
+      "osint": {
+        "status": "not_evaluated",
+        "reason": "network_disabled",
+        "requested": false,
+        "cache": "not_used"
+      }
+    },
+    {
+      "display_url": "https://support.example.net/advice",
+      "normalized_url": "https://support.example.net/advice",
+      "host": "support.example.net",
+      "score": 0,
+      "risk": "low",
+      "findings": [],
+      "reputation": {
+        "status": "not_evaluated",
+        "reason": "offline_feed_not_configured"
+      },
+      "registrable_domain": "example.net",
+      "rank_score": 0,
+      "selected_for_deep_inspection": false,
+      "osint": {}
+    },
+    {
+      "display_url": "https://status.example.edu/notice",
+      "normalized_url": "https://status.example.edu/notice",
+      "host": "status.example.edu",
+      "score": 0,
+      "risk": "low",
+      "findings": [],
+      "reputation": {
+        "status": "not_evaluated",
+        "reason": "offline_feed_not_configured"
+      },
+      "registrable_domain": "example.edu",
+      "rank_score": 0,
+      "selected_for_deep_inspection": false,
+      "osint": {}
+    }
+  ],
+  "links_found": 5,
+  "links_checked": 3,
+  "limitations": [
+    "The score is a triage index, not a probability or proof of malicious intent.",
+    "All unique HTTP(S) destinations are statically ranked; only the three highest-risk destinations receive deep enrichment.",
+    "Static analysis applies resource ceilings of 2,000 unique destinations and 100 attachments per message; any truncation is explicitly reported as partial coverage.",
+    "Authentication-Results is scored only when its authserv-id is explicitly trusted.",
+    "ARC presence is contextual evidence and does not prove that a message is safe.",
+    "No live infrastructure or reputation lookup is performed; local feeds can miss new, targeted, compromised, or short-lived infrastructure.",
+    "Attachments are statically inspected with strict limits; they are never executed or detonated.",
+    "Language and brand rules are screening aids and require analyst review for consequential decisions.",
+    "Regional-pattern matches indicate wording or named entities only; they do not establish sender location, identity, or nationality.",
+    "Unsupported, short, code-switched, transliterated, or dialect-heavy text may be marked as limited language support.",
+    "Advanced tactic rules identify message artifacts, not post-click behavior; endpoint, identity-provider, and mail telemetry are required to confirm execution or account compromise.",
+    "Phone numbers, payment identifiers, and wallet addresses are masked and hashed in metadata; extraction can still miss obfuscated or image-only values."
+  ],
+  "metadata": {
+    "case_id": "NV-6B23BBAC2DFADF0D",
+    "message_sha256": "6b23bbac2dfadf0dd0839d03961745935147542cee7786f9aba217b585c69f37",
+    "analyzed_at": "2026-09-23T04:31:23.139255Z",
+    "subject": "Urgent subscription and identity verification",
+    "languages": [
+      "en"
+    ],
+    "language_scores": {
+      "en": 1
+    },
+    "language_names": [
+      "English"
+    ],
+    "supported_languages": {
+      "en": "English",
+      "zh-Hans": "Simplified Chinese",
+      "zh-Hant": "Traditional Chinese",
+      "ms": "Malay",
+      "id": "Indonesian",
+      "ta": "Tamil",
+      "es": "Spanish",
+      "fr": "French",
+      "de": "German",
+      "pt": "Portuguese",
+      "ar": "Arabic",
+      "hi": "Hindi",
+      "bn": "Bengali",
+      "ur": "Urdu",
+      "th": "Thai",
+      "vi": "Vietnamese",
+      "ja": "Japanese",
+      "ko": "Korean",
+      "tl": "Filipino/Tagalog"
+    },
+    "rule_pack_version": "2026.09.1",
+    "rule_manifest_schema": "1.0",
+    "rule_manifest_sha256": "3110b04f4b447a15dde43e65b2a860eb69902388037e024b5e29724af01c282d",
+    "matched_rule_ids": [
+      "cred.en.verify",
+      "subscription.en"
+    ],
+    "regional_pattern_matches": [
+      {
+        "code": "AU",
+        "label": "Australia",
+        "strength": "possible",
+        "evidence": [
+          "ato"
+        ]
+      }
+    ],
+    "advanced_detection": {
+      "version": "2026.09.23.1",
+      "sensitive_indicators": [
+        {
+          "type": "phone",
+          "masked": "***0198",
+          "sha256_prefix": "7bdcbb4d66ea1bfd"
+        }
+      ],
+      "sensitive_values_redacted": true,
+      "attack_mappings": [
+        {
+          "rule_id": "oauth.consent",
+          "mapping": "MITRE ATT&CK T1566.002/T1528"
+        },
+        {
+          "rule_id": "qr.login",
+          "mapping": "MITRE ATT&CK T1566.002"
+        }
+      ],
+      "impersonation": {
+        "status": "evaluated",
+        "display_name": "Microsoft Security",
+        "from_domain": "unrelated-example.test",
+        "claimed_brands": [
+          "microsoft"
+        ],
+        "message_id_domain": "mailer-other.test"
+      },
+      "tactic_count": 8
+    },
+    "category_scores": {
+      "Credential phishing": 18,
+      "Subscription or renewal scam": 18,
+      "OAuth consent phishing": 28,
+      "QR login phishing": 24,
+      "Callback phishing": 30,
+      "HTML smuggling or credential capture": 70
+    },
+    "links_skipped": 2,
+    "links_skipped_deep_inspection": 2,
+    "url_extraction_truncated": false,
+    "attachments_skipped": 0,
+    "link_selection": [
+      {
+        "url": "https://accounts-example.test/continue?next=https%253A%252F%252Fcredential-capture.test%252Fsignin",
+        "rank_score": 39,
+        "selected": true
+      },
+      {
+        "url": "https://credential-capture.test/session",
+        "rank_score": 0,
+        "selected": true
+      },
+      {
+        "url": "https://example.org/help",
+        "rank_score": 0,
+        "selected": true
+      },
+      {
+        "url": "https://support.example.net/advice",
+        "rank_score": 0,
+        "selected": false
+      },
+      {
+        "url": "https://status.example.edu/notice",
+        "rank_score": 0,
+        "selected": false
+      }
+    ],
+    "authentication": {
+      "status": "not_evaluated",
+      "trusted_authserv_ids": [],
+      "observed_authserv_ids": [],
+      "trusted_blocks": 0,
+      "standard": "RFC 9989"
+    },
+    "thread": {
+      "message_id": "<notice-8821@mailer-other.test>",
+      "in_reply_to": "",
+      "references": ""
+    },
+    "governance": {
+      "model": "deterministic_offline_rules_plus_supporting_character_model",
+      "score_is_probability": false,
+      "regional_match_is_origin_attribution": false,
+      "analyst_review_required": true
+    }
+  },
+  "attachments": [],
+  "dimensions": {
+    "sender_authenticity": 29,
+    "message_intent": 100,
+    "destination_risk": 39,
+    "payload_risk": 0
+  },
+  "evidence_status": {
+    "content": "evaluated",
+    "headers": "evaluated",
+    "authentication": "not_evaluated",
+    "links_static": "evaluated",
+    "local_reputation": "not_evaluated",
+    "network_osint": "not_evaluated",
+    "attachments": "not_applicable",
+    "qr": "not_applicable",
+    "thread_context": "not_applicable",
+    "language_support": "evaluated",
+    "regional_patterns": "observed",
+    "advanced_tactics": "observed",
+    "sensitive_indicator_extraction": "evaluated"
+  },
+  "analyst_disposition": "unreviewed"
+}

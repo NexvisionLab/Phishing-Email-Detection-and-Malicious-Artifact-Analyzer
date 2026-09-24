@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install '.[api,dev]'
+      - run: pytest -q
+      - run: ruff check phishing_analyzer tests
+      - run: mypy phishing_analyzer
+      - run: bandit -r phishing_analyzer -q
+      - run: pip-audit -r requirements-production.txt
+      - run: python -m build

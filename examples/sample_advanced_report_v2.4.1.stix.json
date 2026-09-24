@@ -1,0 +1,21 @@
+{
+  "type": "bundle",
+  "id": "bundle--765e51c1-745b-57e8-bbd3-06e80cea443c",
+  "objects": [
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--8b921d85-95f8-5bc6-bef7-b99786a2cbda",
+      "created": "2026-09-23T04:31:23.669411Z",
+      "modified": "2026-09-23T04:31:23.669411Z",
+      "valid_from": "2026-09-23T04:31:23.669411Z",
+      "pattern_type": "stix",
+      "pattern": "[url:value = 'https://accounts-example.test/continue?next=https%253A%252F%252Fcredential-capture.test%252Fsignin']",
+      "labels": [
+        "suspicious-activity"
+      ],
+      "confidence": 39,
+      "description": "Static triage indicator; analyst validation is required before operational use."
+    }
+  ]
+}
