@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- API: a non-ASCII `Authorization` header now returns 401 instead of a 500.
+- API: with no token configured, loopback requests must carry a local `Host` header (421 otherwise), closing a DNS-rebinding path; `PHISHCHECK_ALLOWED_HOSTS` extends the list.
+- PDF report: each line is capped at 1,500 characters. One 200 KB URL took 48 s and a 1 MB URL over four minutes because ReportLab lays out unbreakable text quadratically; it now takes about 0.3 s. JSON, HTML and DOCX keep the full value.
+- Parser: at most 2,000 MIME parts are examined (a 2 MB message with 50,000 parts took about 40 s); truncation is reported as a `mime_part_limit` indicator.
+- Corrected the repository name in the README, package metadata and citation file.
 ## 2.4.1 — 2026-09-23
 
 - Added fail-closed API authentication for non-loopback clients when no bearer token is configured.

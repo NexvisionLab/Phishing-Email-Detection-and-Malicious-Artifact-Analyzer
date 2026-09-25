@@ -106,5 +106,63 @@ def test_api_requires_token_for_non_loopback_client(monkeypatch):
 def test_api_allows_unauthenticated_loopback_for_compatibility(monkeypatch):
     _requests.clear()
     monkeypatch.delenv("PHISHCHECK_API_TOKEN", raising=False)
-    local = TestClient(app, client=("127.0.0.1", 50000))
+    local = TestClient(app, base_url="http://localhost", client=("127.0.0.1", 50000))
     assert local.post("/v1/analyze", json={"content": "hello"}).status_code == 200
+
+
+def test_api_rejects_malformed_authorization_header_with_401_not_500(monkeypatch):
+    # Regression: hmac.compare_digest raised TypeError on a non-ASCII str, giving a 500.
+    _requests.clear()
+    monkeypatch.setenv("PHISHCHECK_API_TOKEN", "secret-token")
+    client = TestClient(app, raise_server_exceptions=False)
+    response = client.post(
+        "/v1/analyze", json={"content": "hello"}, headers={"Authorization": "Bearer caf\u00e9".encode("latin-1")}
+    )
+    assert response.status_code == 401
+
+
+def test_unauthenticated_api_rejects_non_local_host_header(monkeypatch):
+    # Regression: with no token the Host header was never checked, so a DNS-rebinding page
+    # (attacker domain resolving to 127.0.0.1) could use the local API.
+    _requests.clear()
+    monkeypatch.delenv("PHISHCHECK_API_TOKEN", raising=False)
+    monkeypatch.delenv("PHISHCHECK_ALLOWED_HOSTS", raising=False)
+    local = TestClient(app, client=("127.0.0.1", 50000))
+    for host in ("evil.example", "127.0.0.1.evil.example", "localhost.evil.example"):
+        assert local.post("/v1/analyze", json={"content": "hello"}, headers={"Host": host}).status_code == 421
+    for host in ("localhost", "localhost:8080", "127.0.0.1:8080", "[::1]:8080"):
+        assert local.post("/v1/analyze", json={"content": "hello"}, headers={"Host": host}).status_code == 200
+
+
+def test_allowed_hosts_can_be_extended_for_a_reviewed_gateway(monkeypatch):
+    _requests.clear()
+    monkeypatch.delenv("PHISHCHECK_API_TOKEN", raising=False)
+    monkeypatch.setenv("PHISHCHECK_ALLOWED_HOSTS", "phish.internal.example")
+    local = TestClient(app, client=("127.0.0.1", 50000))
+    assert local.post("/v1/analyze", json={"content": "hello"}, headers={"Host": "phish.internal.example"}).status_code == 200
+
+
+def test_pdf_report_stays_fast_for_one_enormous_unbreakable_url():
+    # Regression: ReportLab lays out an unbreakable run per character, so a ~200 KB URL took ~48 s.
+    import time
+
+    from phishing_analyzer.report import pdf_report
+
+    result = analyze_email("From: a@b.example\nSubject: x\n\nhttp://" + "a." * 60_000)
+    started = time.monotonic()
+    assert pdf_report(result).startswith(b"%PDF")
+    assert time.monotonic() - started < 5
+
+
+def test_multipart_message_with_thousands_of_parts_is_bounded_and_flagged():
+    # Regression: ~1 ms of header parsing per MIME part made a 2 MB message with 50k parts take ~40 s.
+    import time
+
+    from phishing_analyzer.extractor import MAX_MIME_PARTS, parse_input
+
+    parts = "".join("--B\r\nContent-Type: text/plain\r\n\r\nx\r\n" for _ in range(MAX_MIME_PARTS * 5))
+    raw = 'From: a@b.example\r\nSubject: x\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary="B"\r\n\r\n' + parts + "--B--\r\n"
+    started = time.monotonic()
+    parsed = parse_input(raw)
+    assert time.monotonic() - started < 10
+    assert any(item["type"] == "mime_part_limit" for item in parsed.html_indicators)

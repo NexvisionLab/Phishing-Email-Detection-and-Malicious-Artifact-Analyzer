@@ -16,10 +16,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/NexvisionLab/NexVision-PhishIntel"
-Documentation = "https://github.com/NexvisionLab/NexVision-PhishIntel/tree/main/docs"
-Issues = "https://github.com/NexvisionLab/NexVision-PhishIntel/issues"
-Security = "https://github.com/NexvisionLab/NexVision-PhishIntel/security/advisories/new"
+Homepage = "https://github.com/NexvisionLab/Phishing-Email-Detection-and-Malicious-Artifact-Analyzer"
+Documentation = "https://github.com/NexvisionLab/Phishing-Email-Detection-and-Malicious-Artifact-Analyzer/tree/main/docs"
+Issues = "https://github.com/NexvisionLab/Phishing-Email-Detection-and-Malicious-Artifact-Analyzer/issues"
+Security = "https://github.com/NexvisionLab/Phishing-Email-Detection-and-Malicious-Artifact-Analyzer/security/advisories/new"
 
 [project.optional-dependencies]
 api = ["fastapi>=0.115,<1", "uvicorn[standard]>=0.30,<1"]

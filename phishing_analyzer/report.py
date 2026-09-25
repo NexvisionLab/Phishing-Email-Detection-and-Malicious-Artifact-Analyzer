@@ -129,6 +129,9 @@ def html_report(result: AnalysisResult) -> str:
 <h2>Important limitations</h2><ul>{limits}</ul><small>Analyzer v{esc(result.version)}. Automated triage only; consequential decisions require examiner review.</small></main></html>"""
 
 
+_PDF_MAX_LINE = 1500
+
+
 def pdf_report(result: AnalysisResult) -> bytes:
     from reportlab.lib import colors
     from reportlab.lib.enums import TA_RIGHT
@@ -148,7 +151,12 @@ def pdf_report(result: AnalysisResult) -> bytes:
         # Preserve the full original evidence in JSON/HTML/DOCX and make any
         # unsupported script explicit instead of rendering question marks.
         value = re.sub(r"[^\x09\x0a\x0d\x20-\xff]+", " [non-Latin text] ", value)
-        return html.escape(re.sub(r"\s+", " ", value).strip())
+        value = re.sub(r"\s+", " ", value).strip()
+        # ReportLab lays out an unbreakable run character by character, which is quadratic: one 1 MB
+        # URL took minutes. Cap each line; the full value stays in the JSON/HTML/DOCX reports.
+        if len(value) > _PDF_MAX_LINE:
+            value = value[:_PDF_MAX_LINE] + f" ... [truncated, {len(value) - _PDF_MAX_LINE} more characters]"
+        return html.escape(value)
 
     buffer = io.BytesIO()
     styles = getSampleStyleSheet()

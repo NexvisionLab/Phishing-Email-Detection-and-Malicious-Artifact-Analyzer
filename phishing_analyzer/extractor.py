@@ -16,6 +16,7 @@ TRAILING = ".,;:!?)]}>'\""
 URL_ATTRS = {"href", "src", "action", "formaction", "poster", "data", "xlink:href", "background"}
 MAX_EXTRACTED_URLS = 2_000
 MAX_DECODED_TOKENS = 100
+MAX_MIME_PARTS = 2_000
 
 
 @dataclass(slots=True)
@@ -110,12 +111,17 @@ class SafeHTMLExtractor(HTMLParser):
             self.indicators.append({"type": "css_url", "value": match.group(1)[:500]})
 
 
-def _body_parts(message) -> tuple[str, str, list[RawAttachment]]:
+def _body_parts(message) -> tuple[str, str, list[RawAttachment], bool]:
     plain: list[str] = []
     rich: list[str] = []
     attachments: list[RawAttachment] = []
     parts = message.walk() if message.is_multipart() else [message]
+    truncated = False
     for index, part in enumerate(parts):
+        # Each part costs about 1 ms of header parsing, so an unbounded multipart body is a slow-input DoS.
+        if index >= MAX_MIME_PARTS:
+            truncated = True
+            break
         disposition = (part.get_content_disposition() or "").lower()
         ctype = part.get_content_type()
         filename = part.get_filename()
@@ -137,7 +143,7 @@ def _body_parts(message) -> tuple[str, str, list[RawAttachment]]:
             payload = part.get_payload(decode=True) or b""
             content = payload.decode(part.get_content_charset() or "utf-8", errors="replace")
         (plain if ctype == "text/plain" else rich).append(str(content))
-    return "\n".join(plain), "\n".join(rich), attachments
+    return "\n".join(plain), "\n".join(rich), attachments, truncated
 
 
 def parse_input(raw: str | bytes) -> ParsedInput:
@@ -146,14 +152,17 @@ def parse_input(raw: str | bytes) -> ParsedInput:
     if not header_like:
         return ParsedInput("pasted_text", "", text, "", {})
     message = BytesParser(policy=policy.default).parsebytes(raw) if isinstance(raw, bytes) else Parser(policy=policy.default).parsestr(raw)
-    plain, rich, attachments = _body_parts(message)
+    plain, rich, attachments, parts_truncated = _body_parts(message)
     headers = {key.lower(): "\n".join(str(v) for v in message.get_all(key, [])) for key in message}
     html_fallback = not plain and bool(rich)
     if html_fallback:
         parser = SafeHTMLExtractor()
         parser.feed(rich)
         plain = html.unescape(re.sub(r"(?s)<[^>]+>", " ", rich))
-    return ParsedInput("eml", str(message.get("subject", "")), plain, rich, headers, html_fallback, attachments)
+    parsed = ParsedInput("eml", str(message.get("subject", "")), plain, rich, headers, html_fallback, attachments)
+    if parts_truncated:
+        parsed.html_indicators.append({"type": "mime_part_limit", "value": f"Only the first {MAX_MIME_PARTS} MIME parts were examined"})
+    return parsed
 
 
 def _decoded_candidates(text: str) -> list[str]:

@@ -38,6 +38,7 @@ Constraints:
 - `content` is required and limited to 2,000,000 characters by the HTTP schema.
 - Configure `PHISHCHECK_API_TOKEN` to require `Authorization: Bearer <token>`.
 - Requests from non-loopback clients are rejected unless `PHISHCHECK_API_TOKEN` is configured and supplied.
+- Without a token, loopback requests must also carry a local `Host` header (`localhost`, `127.0.0.1` or `::1`); anything else is rejected with `421`, which blocks DNS-rebinding pages. Extra hostnames for a reviewed gateway can be listed, comma-separated, in `PHISHCHECK_ALLOWED_HOSTS`.
 - Requests are limited to 60 analyses per client per minute in a single process.
 - `network_enabled: true` records a denied request and never performs networking.
 
@@ -46,6 +47,7 @@ Responses:
 - `200`: analysis result.
 - `400`: invalid or empty content.
 - `401`: missing or incorrect configured bearer token.
+- `421`: untrusted `Host` header on the token-less loopback path.
 - `429`: per-process rate limit exceeded.
 
 ## Environment variables
