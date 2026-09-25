@@ -23,7 +23,8 @@ Security = "https://github.com/NexvisionLab/Phishing-Email-Detection-and-Malicio
 
 [project.optional-dependencies]
 api = ["fastapi>=0.115,<1", "uvicorn[standard]>=0.30,<1"]
-qr = ["numpy>=1.26,<3", "opencv-python-headless>=4.10,<5"]
+qr = ["numpy>=1.26,<3", "opencv-python-headless>=4.10,<6"]
+qr-fallback = ["pyzbar>=0.1.9"]
 dev = [
   "bandit>=1.9,<2",
   "build>=1.3,<2",
@@ -31,6 +32,7 @@ dev = [
   "mypy>=1.18,<2",
   "pip-audit>=2.10,<3",
   "pytest>=9.0.3,<10",
+  "qrcode>=7.4,<9",
   "ruff>=0.13,<1",
 ]
 
@@ -55,3 +57,10 @@ warn_unused_ignores = true
 [[tool.mypy.overrides]]
 module = ["publicsuffix2", "reportlab.*"]
 ignore_missing_imports = true
+
+# Optional QR decoders. Their stubs may not be installed, and numpy's newer stubs need a newer Python than this project targets.
+[[tool.mypy.overrides]]
+module = ["numpy", "numpy.*", "cv2", "cv2.*", "pyzbar", "pyzbar.*"]
+ignore_missing_imports = true
+follow_imports = "skip"
+follow_imports_for_stubs = true

@@ -10,6 +10,7 @@ from pathlib import Path, PurePosixPath
 
 from .extractor import URL_RE, RawAttachment, extract_urls, parse_input
 from .models import AttachmentResult, Finding
+from .qr import classify_payload, decode_qr_image
 from .urls import risk_label
 
 MAX_ATTACHMENT_BYTES = 10_000_000
@@ -92,31 +93,32 @@ def _detected_type(data: bytes) -> str:
 
 
 def _qr_urls(data: bytes) -> tuple[list[str], dict[str, object]]:
-    try:
-        import cv2  # type: ignore
-        import numpy as np  # type: ignore
-
-        image = cv2.imdecode(np.frombuffer(data, dtype=np.uint8), cv2.IMREAD_COLOR)
-        if image is None:
-            return [], {"status": "evaluated", "symbols": 0}
-        detector = cv2.QRCodeDetector()
-        ok, values, _, _ = detector.detectAndDecodeMulti(image)
-        decoded = list(values) if ok else []
-        if not decoded:
-            value, _, _ = detector.detectAndDecode(image)
-            decoded = [value] if value else []
-        urls = [m for value in decoded for m in URL_RE.findall(value)]
-        fingerprints = [
-            {
-                "masked": f"***{value[-4:] if len(value) >= 4 else '****'}",
-                "sha256_prefix": hashlib.sha256(value.encode("utf-8", errors="replace")).hexdigest()[:16],
-            }
-            for value in decoded
-            if not value.lower().startswith(("http://", "https://"))
-        ]
-        return urls, {"status": "evaluated", "symbols": len(decoded), "non_url_payloads": fingerprints, "sensitive_values_redacted": True}
-    except (ImportError, RuntimeError, ValueError):
-        return [], {"status": "not_evaluated", "reason": "local_qr_decoder_unavailable"}
+    decoded = decode_qr_image(data)
+    if decoded.status != "evaluated":
+        return [], {"status": "not_evaluated", "reason": decoded.reason}
+    urls: list[str] = []
+    fingerprints = []
+    kinds = []
+    for value in decoded.values:
+        payload = classify_payload(value)
+        kinds.append(payload.kind)
+        if payload.url:
+            urls.append(payload.url)
+        if payload.kind != "url" or not value.lower().startswith(("http://", "https://")):
+            fingerprints.append(
+                {
+                    "masked": f"***{value[-4:] if len(value) >= 4 else '****'}",
+                    "sha256_prefix": hashlib.sha256(value.encode("utf-8", errors="replace")).hexdigest()[:16],
+                    "kind": payload.kind,
+                }
+            )
+    return urls, {
+        "status": "evaluated",
+        "symbols": len(decoded.values),
+        "payload_kinds": kinds,
+        "non_url_payloads": fingerprints,
+        "sensitive_values_redacted": True,
+    }
 
 
 def analyze_attachment(item: RawAttachment) -> AttachmentResult:

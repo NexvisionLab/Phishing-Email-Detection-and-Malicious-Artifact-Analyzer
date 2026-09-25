@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- QR codes: new `phishing_analyzer.qr` module. `decode_qr_image` reads every code in an image (OpenCV, with `pyzbar` as an
+  optional fallback, since each misses codes the other reads, and an inverted retry for light-on-dark codes) and never
+  raises. `classify_payload` says what scanning a code would do (link, Wi-Fi, payment, SMS, call, authenticator setup,
+  script, app install...) without returning secrets: a Wi-Fi password, an authenticator secret and most of a wallet address
+  are not shown.
+- Fixed in the process: an image is now measured from its header before decoding. A 303 KB, 100-megapixel PNG made the
+  decoder allocate 1.3 GB (about 13 bytes per pixel, and OpenCV's own cap is a billion pixels), so a small attachment could
+  exhaust memory; images over 36 megapixels are now reported as `image_too_large`. A raw `cv2.error` is no longer possible.
+  A QR code holding a web address without `http://` (`bit.ly/...`, `example.com/pay`) was ignored; it is now treated as a
+  link. File names such as `report.pdf` are not mistaken for web addresses.
+- The optional `qr` extra now allows OpenCV 5 and CI installs it, so decoding is tested on every platform; `qr-fallback`
+  adds `pyzbar`.
+
 - Brand look-alike detection (`domains.brand_impersonation`) was matching by substring, which flagged real and innocent
   hosts as "suspicious" (`google.co.uk`, `googleapis.com`, `amazonaws.com`, and `mashable.com`, `masterclass.com`,
   `mohawk.com`, `pineapple.com` for containing `mas`, `moh` or `apple`), while missing look-alikes spelled with digits or
