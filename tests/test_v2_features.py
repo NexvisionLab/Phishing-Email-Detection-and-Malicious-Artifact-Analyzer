@@ -7,6 +7,7 @@ from email.message import EmailMessage
 from phishing_analyzer.analyzer import analyze_email
 from phishing_analyzer.domains import registrable_domain
 from phishing_analyzer.report import docx_report, html_report, pdf_report, stix_report
+from phishing_analyzer.urls import analyze_url
 
 
 def test_untrusted_authentication_results_are_not_scored():
@@ -161,3 +162,24 @@ def test_reports_include_case_hash_and_are_valid_containers():
     with zipfile.ZipFile(io.BytesIO(docx_report(result))) as archive:
         assert "word/document.xml" in archive.namelist()
     assert json.loads(stix_report(result))["type"] == "bundle"
+
+
+def test_brand_lookalikes_built_from_digits_letters_and_swaps_are_flagged():
+    # Regression: micros0ft, amaz0n, g00gle, rnicrosoft and googel were not flagged; only paypa1-style edits were.
+    for url in (
+        "https://micros0ft-support.top/login", "https://amaz0n-security.com/verify", "https://g00gle-accounts.com/x",
+        "https://rnicrosoft.com/login", "https://googel.com/", "https://secure.paypal.com.evil.top/",
+        "https://verify-apple.com/", "https://dbs-secure-login.xyz/",
+    ):
+        assert "BRAND_IMPERSONATION" in {finding.code for finding in analyze_url(url).findings}, url
+
+
+def test_real_brand_domains_and_innocent_names_are_not_flagged():
+    # Regression: any host that merely contained a brand as a substring was "suspicious", including google.co.uk,
+    # googleapis.com and amazonaws.com (the brands' own) and mashable.com, masterclass.com, mohawk.com, pineapple.com.
+    for url in (
+        "https://google.co.uk/", "https://googleapis.com/", "https://s3.amazonaws.com/x", "https://login.microsoftonline.com/",
+        "https://accounts.google.com/", "https://www.paypal.com/activity", "https://mashable.com/", "https://masterclass.com/",
+        "https://mohawk.com/", "https://pineapple.com/", "https://appleseed.org/", "https://dbsdev.io/",
+    ):
+        assert "BRAND_IMPERSONATION" not in {finding.code for finding in analyze_url(url).findings}, url

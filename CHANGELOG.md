@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Brand look-alike detection (`domains.brand_impersonation`) was matching by substring, which flagged real and innocent
+  hosts as "suspicious" (`google.co.uk`, `googleapis.com`, `amazonaws.com`, and `mashable.com`, `masterclass.com`,
+  `mohawk.com`, `pineapple.com` for containing `mas`, `moh` or `apple`), while missing look-alikes spelled with digits or
+  letter pairs (`micros0ft-support.top`, `amaz0n-security.com`, `g00gle-accounts.com`, `rnicrosoft.com`, `googel.com`).
+  It now splits each label to the left of the public suffix on hyphens and matches a token that is the brand, the brand
+  joined only to lure words (`paypalsecure`, `verify-apple`), or one edit or one swap away from a brand of five or more
+  letters, after folding digit and `rn`/`vv` look-alikes. The brands' own domain families (Google, Amazon, Microsoft, Apple,
+  PayPal, DHL) are recognised so they are never flagged.
 - API: a non-ASCII `Authorization` header now returns 401 instead of a 500.
 - API: with no token configured, loopback requests must carry a local `Host` header (421 otherwise), closing a DNS-rebinding path; `PHISHCHECK_ALLOWED_HOSTS` extends the list.
 - PDF report: each line is capped at 1,500 characters. One 200 KB URL took 48 s and a 1 MB URL over four minutes because ReportLab lays out unbreakable text quadratically; it now takes about 0.3 s. JSON, HTML and DOCX keep the full value.
