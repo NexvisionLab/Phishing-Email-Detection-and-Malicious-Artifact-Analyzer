@@ -4,6 +4,7 @@ import re
 import unicodedata
 from collections import defaultdict
 
+from .domains import CONFUSABLES
 from .local_model import classify_local
 from .locale_rules import GENERIC_RULES, NEGATION_PATTERNS, SCAM_RULES, detect_languages
 from .models import Finding
@@ -11,9 +12,28 @@ from .models import Finding
 NEGATION = re.compile("|".join(f"(?:{pattern})" for pattern in NEGATION_PATTERNS), re.IGNORECASE)
 
 
+_WORD = re.compile(r"[^\W\d_]+")
+_SPACED_LETTERS = re.compile(r"(?<![A-Za-z])(?:[A-Za-z] ){3,}[A-Za-z](?![A-Za-z])")
+_CONFUSABLE_TABLE = {ord(k) if isinstance(k, str) else k: v for k, v in dict(CONFUSABLES).items()}
+
+
+def _fold_mixed_script(match: re.Match) -> str:
+    """A word that mixes Latin letters with lookalike Cyrillic or Greek ones (a Cyrillic a and e in "verify your account")
+    is folded to Latin so the wording rules still read it. Words written entirely in another script are left alone, so
+    genuine Russian or Greek text is not disturbed."""
+    word = match.group(0)
+    if word.isascii() or not any("a" <= c.lower() <= "z" for c in word):
+        return word
+    return word.translate(_CONFUSABLE_TABLE)
+
+
 def normalize_text(value: str) -> str:
     value = unicodedata.normalize("NFKC", value)
     value = re.sub(r"[\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufeff]", "", value)
+    value = _WORD.sub(_fold_mixed_script, value)
+    # "s e e d   p h r a s e": single letters separated by single spaces are one word written to dodge keyword rules
+    value = _SPACED_LETTERS.sub(lambda m: m.group(0).replace(" ", ""), value)
+    value = re.sub(r"[ \t]{2,}", " ", value)
     return re.sub(r"(?<=\w)[._\u200b](?=\w)", "", value)
 
 

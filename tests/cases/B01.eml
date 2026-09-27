@@ -1,0 +1,18 @@
+From: "Loop Coffee Roasters" <hello@news.loopcoffee.com>
+To: j.tan@acme-corp.com
+Subject: Last chance: 48-hour flash sale - free shipping ends tonight!
+Date: Thu, 24 Sep 2026 09:30:00 +0000
+Message-ID: <4839820362@mail.example.net>
+Authentication-Results: mx.corp.example.org; spf=pass
+ smtp.mailfrom=bounce.news.loopcoffee.com; dkim=pass
+ header.d=news.loopcoffee.com; dmarc=pass
+List-Unsubscribe: <https://news.loopcoffee.com/unsub?u=8842>
+List-Id: <weekly.news.loopcoffee.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Flash sale ends tonight! Free shipping on orders over $40. Shop now: https://=
+news.loopcoffee.com/sale?utm_source=3Demail&utm_campaign=3Dflash
+
+Unsubscribe: https://news.loopcoffee.com/unsub?u=3D8842

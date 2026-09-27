@@ -1,0 +1,19 @@
+From: "Microsoft 365 Security" <security-noreply@micr0soft-online.com>
+To: j.tan@acme-corp.com
+Subject: Action required: your mailbox will be deactivated in 24 hours
+Date: Thu, 24 Sep 2026 09:30:00 +0000
+Message-ID: <9679860597@mail.example.net>
+Authentication-Results: mx.corp.example.org; spf=fail
+ smtp.mailfrom=micr0soft-online.com; dkim=none; dmarc=fail
+ header.from=micr0soft-online.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Your Microsoft 365 password expires today. Verify your account now to keep ac=
+cess to email and Teams.
+
+Sign in: https://login.microsoftonline.com.secure-verify-account.com/common/o=
+auth2/authorize?client_id=3D8842
+
+Microsoft Account Team

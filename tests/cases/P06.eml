@@ -1,0 +1,28 @@
+From: "Fatima Noor" <fatima.noor@trade-partners-hk.com>
+To: ops@acme-corp.com
+Subject: Shipping documents - BL and Invoice
+Date: Thu, 24 Sep 2026 09:30:00 +0000
+Message-ID: <6326440060@mail.example.net>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============1643418632679920302=="
+
+--===============1643418632679920302==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hello,
+
+Please find the shipping documents attached (password: 2026). The container l=
+eaves Friday; we need confirmation today.
+
+Best regards
+
+--===============1643418632679920302==
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="BL-Invoice-99123.pdf.exe"
+MIME-Version: 1.0
+
+TVqQAAMAAAAEAAAAIHN0YW5kLWlu
+
+--===============1643418632679920302==--

