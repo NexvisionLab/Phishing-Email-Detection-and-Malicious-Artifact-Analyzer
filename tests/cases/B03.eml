@@ -1,0 +1,20 @@
+From: "IT Service Desk" <itservicedesk@acme-corp.com>
+To: j.tan@acme-corp.com
+Subject: Your password expires in 3 days
+Date: Thu, 24 Sep 2026 09:30:00 +0000
+Message-ID: <6626993510@mail.example.net>
+Authentication-Results: mx.acme-corp.com; spf=pass
+ smtp.mailfrom=acme-corp.com; dkim=pass header.d=acme-corp.com; dmarc=pass
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Hi J. Tan,
+
+Your network password expires on 27 Sep. Please change it before then using t=
+he self-service portal: https://sso.acme-corp.com/password/change
+
+If you need help, raise a ticket at https://helpdesk.acme-corp.com or call ex=
+t. 4400.
+
+IT Service Desk

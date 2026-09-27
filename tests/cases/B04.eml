@@ -1,0 +1,23 @@
+From: "DocuSign System" <dse_na3@docusign.net>
+To: j.tan@acme-corp.com
+Subject: Please DocuSign: Vendor Agreement.pdf
+Date: Thu, 24 Sep 2026 09:30:00 +0000
+Message-ID: <6871981190@mail.example.net>
+Authentication-Results: mx.corp.example.org; spf=pass
+ smtp.mailfrom=docusign.net; dkim=pass header.d=docusign.net; dmarc=pass
+ header.from=docusign.net
+Content-Type: multipart/alternative;
+ boundary="===============0820220048440018086=="
+
+--===============0820220048440018086==
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+<html><body><p>Priya Nair sent you a document to review and sign.</p>
+<p><a href=3D"https://na3.docusign.net/Signing/EmailStart.aspx?a=3D1f2e3d4c&e=
+tti=3D24&acct=3D9912&er=3De5b1">REVIEW DOCUMENT</a></p>
+<p>Do not share this email. If you did not expect it, contact the sender dire=
+ctly.</p></body></html>
+
+--===============0820220048440018086==--
