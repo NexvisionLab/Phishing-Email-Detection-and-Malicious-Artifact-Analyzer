@@ -1,0 +1,18 @@
+From: "Sarah Wong" <sarah.wong.hr1984@outlook.com>
+To: payroll@acme-corp.com
+Subject: Direct deposit update
+Date: Thu, 24 Sep 2026 09:30:00 +0000
+Message-ID: <6924115372@mail.example.net>
+Authentication-Results: mx.corp.example.org; spf=pass
+ smtp.mailfrom=outlook.com; dkim=pass header.d=outlook.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Hello Payroll,
+
+I have changed banks. Please update my direct deposit before Friday's run. Ne=
+w routing and account number: 021000021 / 4409 8821 3307. I can't access the =
+HR portal from here. Thanks!
+
+Sarah Wong, Finance

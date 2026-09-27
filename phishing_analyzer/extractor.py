@@ -9,9 +9,19 @@ from dataclasses import dataclass, field
 from email import policy
 from email.parser import BytesParser, Parser
 from html.parser import HTMLParser
-from urllib.parse import unquote, urljoin
+from urllib.parse import unquote, urljoin, urlparse
+
+from .domains import registrable_domain
 
 URL_RE = re.compile(r"(?i)\bhttps?://[^\s<>\"']+")
+# Link text that is just a domain ("paypal.com", "www.bank.example/login") reads as a destination to the recipient.
+_BARE_DOMAIN_RE = re.compile(r"(?i)^\s*((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24})(?::\d+)?(?:/\S*)?\s*$")
+# ...but "invoice.pdf" or "setup.exe" is a file name, not a site.
+_FILE_LIKE_SUFFIXES = {
+    "pdf", "doc", "docx", "docm", "xls", "xlsx", "xlsm", "ppt", "pptx", "zip", "rar", "gz", "tar", "iso", "img", "html", "htm", "txt",
+    "csv", "png", "jpg", "jpeg", "gif", "svg", "exe", "msi", "js", "json", "xml", "php", "asp", "aspx", "dat", "lnk", "bat", "eml",
+    "msg", "ics", "py", "sh", "dll", "apk", "dmg",
+}
 TRAILING = ".,;:!?)]}>'\""
 URL_ATTRS = {"href", "src", "action", "formaction", "poster", "data", "xlink:href", "background"}
 MAX_EXTRACTED_URLS = 2_000
@@ -138,12 +148,65 @@ def _body_parts(message) -> tuple[str, str, list[RawAttachment], bool]:
         if ctype not in {"text/plain", "text/html"}:
             continue
         try:
-            content = part.get_content()
+            content = _part_text(part)
         except (LookupError, TypeError, UnicodeError, ValueError):
             payload = part.get_payload(decode=True) or b""
-            content = payload.decode(part.get_content_charset() or "utf-8", errors="replace")
+            content = _decode_payload(payload, part.get_content_charset())
         (plain if ctype == "text/plain" else rich).append(str(content))
     return "\n".join(plain), "\n".join(rich), attachments, truncated
+
+
+def _decode_payload(payload: bytes, charset: str | None) -> str:
+    """Decode with the declared charset, falling back to UTF-8 when it is unknown: a hostile sender can declare any
+    name, and the recovery path for an undecodable part must not itself raise."""
+    try:
+        return payload.decode(charset or "utf-8", errors="replace")
+    except (LookupError, TypeError, ValueError):
+        return payload.decode("utf-8", errors="replace")
+
+
+def _part_text(part) -> str:
+    """The text of a text/plain or text/html part.
+
+    part.get_content() decodes a part that declares no charset as ASCII, so an accent became a replacement character and
+    a Chinese character the literal text \\u4f60 for any message that had headers: pasted text was destroyed before a
+    single rule saw it (and an uploaded .eml with a UTF-8 body and no charset lost every non-ASCII character).
+    Text that is already decoded (a message pasted as text) is kept as is; anything else is decoded from its bytes with
+    the declared charset, or UTF-8 when there is none."""
+    encoding = str(part.get("content-transfer-encoding", "")).strip().lower()
+    # get_payload() itself decodes surrogate-escaped bytes as ASCII with "replace", which is what turned an uploaded
+    # UTF-8 body with no charset into replacement characters, so the stored payload is read directly.
+    payload = getattr(part, "_payload", None)
+    if isinstance(payload, str) and encoding in {"", "7bit", "8bit", "binary"}:
+        if any(ord(char) > 127 and not 0xDC80 <= ord(char) <= 0xDCFF for char in payload):
+            return payload
+        return _decode_payload(payload.encode("utf-8", "surrogateescape"), part.get_content_charset())
+    return _decode_payload(part.get_payload(decode=True) or b"", part.get_content_charset())
+
+
+def _visible_destination(label: str) -> tuple[str, str]:
+    """(host, text) a recipient reads a link's visible text as pointing to, or ("", "") when it names no destination."""
+    match = URL_RE.search(label)
+    if match:
+        text = match.group(0).rstrip(TRAILING)
+        return (urlparse(text).hostname or "").casefold(), text
+    match = _BARE_DOMAIN_RE.match(label)
+    if match and match.group(1).rsplit(".", 1)[-1].casefold() not in _FILE_LIKE_SUFFIXES:
+        return match.group(1).casefold(), match.group(1)
+    return "", ""
+
+
+# Hosts where anyone can publish a page under a well-known name: drive.google.com and sites.google.com share a registrable
+# domain but are not the same place, and a lure that shows one and opens the other is exactly this trick.
+_USER_CONTENT_HOSTS = {"sites.google.com", "script.google.com", "docs.google.com", "storage.googleapis.com", "forms.gle"}
+
+
+def _same_site(host_a: str, host_b: str) -> bool:
+    if host_a == host_b:
+        return True
+    if host_a in _USER_CONTENT_HOSTS or host_b in _USER_CONTENT_HOSTS:
+        return False
+    return registrable_domain(host_a) == registrable_domain(host_b)
 
 
 def parse_input(raw: str | bytes) -> ParsedInput:
@@ -204,9 +267,12 @@ def extract_urls(parsed: ParsedInput) -> tuple[list[str], list[tuple[str, str]]]
         candidates.extend(parser.urls)
         for href, label in parser.anchors:
             candidates.append(href)
-            visible = URL_RE.search(label)
-            if visible and visible.group(0).rstrip(TRAILING).casefold() != href.rstrip(TRAILING).casefold():
-                mismatches.append((visible.group(0).rstrip(TRAILING), href.rstrip(TRAILING)))
+            # Compare the SITE the text names with the site the link goes to. Comparing the whole strings flagged a
+            # label of https://shop.example/sale over a link with tracking parameters, and missed a bare-domain label.
+            visible_host, visible_text = _visible_destination(label)
+            actual_host = (urlparse(html.unescape(href).strip()).hostname or "").casefold()
+            if visible_host and actual_host and not _same_site(visible_host, actual_host):
+                mismatches.append((visible_text, href.rstrip(TRAILING)))
     unique: list[str] = []
     seen: set[str] = set()
     for url in candidates:

