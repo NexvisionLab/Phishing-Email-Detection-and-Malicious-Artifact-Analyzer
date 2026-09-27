@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+- Credential-phishing coverage for Malay, Indonesian, Arabic and Russian bank-style lures, wallet recovery-phrase requests,
+  and a QR-code-in-email lure. Found by running 25 phishing emails in many languages plus 8 genuine emails through the
+  checker: a Malay ("Akaun anda telah digantung"), Indonesian, Arabic and Russian bank-account-suspension email each scored
+  Low, because the existing rules for those languages only matched "verify" next to "account" and none matched "verify
+  your identity" or a lock/suspension threat. Also Low before this: a wallet email asking for a 24-word recovery phrase, and
+  an MFA email asking the recipient to scan a QR code to "re-enrol". New rules: `lock.ms`/`lock.id`/`lock.ar`/`lock.ru`
+  (account-suspension threats), `cred.ms.identity`/`cred.id.identity`/`cred.ar.identity`/`cred.ru` (verify-identity
+  wording), `wallet.en.phrase`, `qr.en.verify`, `lock.en`. Russian is now a supported language (`SUPPORTED_LANGUAGES`,
+  script hint, marker words). Two existing English rules (`cred.en.verify`, `bec.en.bankchange`) matched "update your
+  account" and "update your payment details" inside an ordinary billing notice pointing to the account's own settings
+  page, which scored a real Netflix-style notice `likely_phishing` 51; both now exempt a match followed by "settings".
+  `tests/test_multilingual_lures.py` covers the six new scam wordings and 7 genuine emails that share their vocabulary
+  (an "always verify your identity" bank alert, seed-phrase safety advice, a real MFA reminder, a real QR check-in,
+  an Indonesian bank product email, a Russian newsletter). Not added: Hindi, Bengali, Urdu, Thai, Japanese, Korean and
+  Tagalog still have one credential rule each with no lock/suspension wording.
+
 - QR codes: new `phishing_analyzer.qr` module. `decode_qr_image` reads every code in an image (OpenCV, with `pyzbar` as an
   optional fallback, since each misses codes the other reads, and an inverted retry for light-on-dark codes) and never
   raises. `classify_payload` says what scanning a code would do (link, Wi-Fi, payment, SMS, call, authenticator setup,

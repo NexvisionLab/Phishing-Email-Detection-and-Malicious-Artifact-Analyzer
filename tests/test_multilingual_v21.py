@@ -112,7 +112,7 @@ def test_multilingual_benign_warnings_are_suppressed(message):
 
 def test_rule_pack_schema_and_governance_metadata():
     assert validate_rule_pack() == []
-    assert len(SUPPORTED_LANGUAGES) == 19
+    assert len(SUPPORTED_LANGUAGES) == 20  # 19 plus Russian
     assert len({rule.category for rule in SCAM_RULES}) >= 19
     result = analyze_email("hello")
     assert result.metadata["rule_pack_version"] == RULE_PACK_VERSION
