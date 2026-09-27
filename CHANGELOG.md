@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+- Credential-phishing coverage for Malay, Indonesian, Arabic and Russian bank-style lures, and a QR-code-in-email lure.
+  Found by running 25 phishing emails in many languages plus 8 genuine emails through the checker: a Malay ("Akaun anda
+  telah digantung"), Indonesian, Arabic and Russian bank-account-suspension email each scored Low, because the existing
+  rules for those languages only matched "verify" next to "account" and none matched "verify your identity" or a
+  lock/suspension threat. Also Low before this: an MFA email asking the recipient to scan a QR code to "re-enrol". New
+  rules: `lock.ms`/`lock.id`/`lock.ar`/`lock.ru` (account-suspension threats), `cred.ms.identity`/`cred.id.identity`/
+  `cred.ar.identity`/`cred.ru` (verify-identity wording), `qr.en.verify`, `lock.en`. Russian is now a supported language
+  (`SUPPORTED_LANGUAGES`, script hint, marker words). `crypto.en.seedphrase` (added just above, in the case review
+  below) is widened to also catch "private key"/"keystore" wording, which it did not. Two existing English rules
+  (`cred.en.verify`, `bec.en.bankchange`) matched "update your account" and "update your payment details" inside an
+  ordinary billing notice pointing to the account's own settings page, which scored a real Netflix-style notice
+  `likely_phishing` 51; both now exempt a match followed by "settings". `tests/test_multilingual_lures.py` covers the
+  five new scam wordings and 7 genuine emails that share their vocabulary (an "always verify your identity" bank alert,
+  seed-phrase safety advice, a real MFA reminder, a real QR check-in, an Indonesian bank product email, a Russian
+  newsletter). Not added: Hindi, Bengali, Urdu, Thai, Japanese, Korean and Tagalog still have one credential rule each
+  with no lock/suspension wording.
+
 - Case review (2026-09-27): twenty realistic emails (fifteen attacks, five tricky legitimate messages; `tests/make_cases.py`,
   `tests/run_cases.py`) plus a malformed-input probe (`tests/fuzz_probe.py`) turned up these bugs, all fixed with regression
   tests in `tests/test_case_review.py`:

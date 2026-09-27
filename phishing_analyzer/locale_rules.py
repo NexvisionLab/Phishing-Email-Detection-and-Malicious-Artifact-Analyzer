@@ -37,6 +37,7 @@ SUPPORTED_LANGUAGES = {
     "ja": "Japanese",
     "ko": "Korean",
     "tl": "Filipino/Tagalog",
+    "ru": "Russian",
 }
 
 
@@ -63,6 +64,7 @@ LANGUAGE_MARKERS: dict[str, tuple[str, ...]] = {
     "ja": ("アカウント", "確認", "パスワード", "支払い", "緊急", "荷物"),
     "ko": ("계정", "확인", "비밀번호", "결제", "긴급", "택배"),
     "tl": ("beripikahin", "iyong account", "bayad", "kagyat", "padala", "gcash"),
+    "ru": ("аккаунт", "подтвердите", "пароль", "оплата", "срочно", "посылка", "заблокирована", "клиент"),
 }
 
 SCRIPT_HINTS = {
@@ -72,6 +74,7 @@ SCRIPT_HINTS = {
     "th": re.compile(r"[\u0e00-\u0e7f]"),
     "ja": re.compile(r"[\u3040-\u30ff]"),
     "ko": re.compile(r"[\uac00-\ud7af]"),
+    "ru": re.compile(r"[\u0400-\u04ff]"),
 }
 
 
@@ -81,7 +84,7 @@ SCAM_RULES: tuple[ScamRule, ...] = (
         "cred.en.verify",
         "Credential phishing",
         "en",
-        r"\b(verify|validate|confirm|update|unlock)\b.{0,40}\b(account|identity|password|login|mailbox)\b",
+        r"\b(verify|validate|confirm|update|unlock)\b.{0,40}\b(account|identity|password|login|mailbox)\b(?!\s+settings)",
         "Requests account verification",
         18,
     ),
@@ -262,7 +265,9 @@ SCAM_RULES: tuple[ScamRule, ...] = (
         "bec.en.bankchange",
         "Business email compromise",
         "en",
-        r"\b(change|updated?|new)\b.{0,32}\b(bank|banking|payment)\b.{0,24}\b(detail|account)",
+        # "Update your payment details in your account settings" is what a subscription's billing notice says; a fraudster's
+        # version points to a link, so a pointer to the account's own settings is not counted.
+        r"\b(change|updated?|new)\b.{0,32}\b(bank|banking|payment)\b.{0,24}\b(detail|account)s?\b(?!.{0,30}\bsettings\b)",
         "Requests changed banking details",
         28,
     ),
@@ -279,8 +284,8 @@ SCAM_RULES: tuple[ScamRule, ...] = (
         "crypto.en.seedphrase",
         "Crypto wallet phishing",
         "en",
-        r"\b(?:seed phrase|recovery phrase|secret recovery phrase|recovery words|mnemonic|12[- ]word|24[- ]word)\b.{0,90}\b(?:verify|confirm|enter|provide|submit|send|restore|validate|reply)\b"
-        r"|\b(?:verify|confirm|enter|provide|submit|send|restore|validate)\b.{0,60}\b(?:seed phrase|recovery phrase|secret recovery phrase|recovery words|mnemonic|12[- ]word|24[- ]word)\b",
+        r"\b(?:seed phrase|recovery phrase|secret recovery phrase|recovery words|mnemonic|12[- ]word|24[- ]word|private key|keystore)\b.{0,90}\b(?:verify|confirm|enter|provide|submit|send|restore|validate|reply|share|type|paste)\b"
+        r"|\b(?:verify|confirm|enter|provide|submit|send|restore|validate|share|type|paste)\b.{0,60}\b(?:seed phrase|recovery phrase|secret recovery phrase|recovery words|mnemonic|12[- ]word|24[- ]word|private key|keystore)\b",
         "Asks for a wallet recovery phrase",
         40,
     ),
@@ -726,17 +731,108 @@ SCAM_RULES: tuple[ScamRule, ...] = (
         "Coercive demand for payment",
         28,
     ),
+    # QR-code lures: an email that must be scanned with a phone to "verify" or "re-enrol" is a way to move the victim off a
+    # screen with no link to inspect. (`crypto.en.seedphrase` above already covers recovery-phrase requests; it is widened
+    # just below to also catch "private key"/"keystore" wording, which it did not.)
+    ScamRule(
+        "qr.en.verify",
+        "Credential phishing",
+        "en",
+        r"\bscan\b.{0,30}\b(qr|barcode)\b.{0,90}\b(verify|re-?enrol\w*|re-?enroll\w*|authenticate|sign[ -]?in|log[ -]?in|update|activate|unlock|secure)\b|\b(qr code)\b.{0,70}\b(to (?:verify|re-?enrol\w*|re-?enroll\w*|authenticate|sign in|log in)|below to)\b",
+        "Asks the recipient to scan a QR code to verify or sign in",
+        22,
+    ),
+    ScamRule(
+        "lock.en",
+        "Credential phishing",
+        "en",
+        r"\b(failure to|unless you|if you (?:do not|don't)|otherwise|to avoid|or (?:your|the)) .{0,70}\b(locked|suspended|closed|disabled|frozen|blocked|deactivated|terminated|permanently)\b",
+        "Threatens to lock or close the account unless the recipient acts",
+        15,
+    ),
+    # Malay, Indonesian, Arabic and Russian bank-style lures. The credential rules above looked for the word "account" next to
+    # "verify"; these messages say "verify your identity" and threaten a suspension, which matched nothing and scored Low.
+    ScamRule(
+        "cred.ms.identity",
+        "Credential phishing",
+        "ms",
+        r"(sahkan|semak|kemas kini|sahkan semula).{0,30}(identiti|maklumat|akaun|kad|kata laluan)",
+        "Requests credential action",
+        18,
+        ("MY", "SG"),
+    ),
+    ScamRule(
+        "lock.ms",
+        "Credential phishing",
+        "ms",
+        r"(akaun|kad|akses).{0,40}(digantung|disekat|dibekukan|dikunci|ditutup|dibatalkan)|(elak|mengelakkan|untuk mengelak).{0,25}(penutupan|penggantungan|sekatan)",
+        "Threatens to suspend or close the account",
+        18,
+        ("MY", "SG"),
+    ),
+    ScamRule(
+        "cred.id.identity",
+        "Credential phishing",
+        "id",
+        r"(verifikasi|konfirmasi|perbarui|segera verifikasi).{0,30}(identitas|akun|rekening|kartu|data)",
+        "Requests credential action",
+        18,
+        ("ID",),
+    ),
+    ScamRule(
+        "lock.id",
+        "Credential phishing",
+        "id",
+        r"(rekening|akun|kartu|akses).{0,40}(diblokir|dibekukan|ditangguhkan|dinonaktifkan|ditutup)|(hindari|menghindari|agar tidak).{0,25}(penutupan|pemblokiran|penangguhan)",
+        "Threatens to suspend or close the account",
+        18,
+        ("ID",),
+    ),
+    ScamRule(
+        "cred.ar.identity",
+        "Credential phishing",
+        "ar",
+        r"(تحقق|التحقق|تأكيد|تحديث).{0,30}(هويتك|حسابك|بياناتك|بطاقتك|معلوماتك)",
+        "Requests credential action",
+        18,
+        ("MENA",),
+    ),
+    ScamRule(
+        "lock.ar",
+        "Credential phishing",
+        "ar",
+        r"(حسابك|بطاقتك|الوصول).{0,30}(تجميد|مجمد|مجمّد|موقوف|إيقاف|معلق|تعليق|محظور|إغلاق|مغلق)|(تم|سيتم)\s+(تجميد|إيقاف|تعليق|إغلاق)\s+(حسابك|بطاقتك)",
+        "Threatens to suspend or close the account",
+        18,
+        ("MENA",),
+    ),
+    ScamRule(
+        "cred.ru",
+        "Credential phishing",
+        "ru",
+        r"(подтвердите|проверьте|подтвердить|обновите|верифицируйте|пройдите верификацию).{0,40}(личность|аккаунт|карт[ыуа]?|данные|счёт|счет|пароль)",
+        "Requests credential action",
+        18,
+    ),
+    ScamRule(
+        "lock.ru",
+        "Credential phishing",
+        "ru",
+        r"(карта|карты|счёт|счет|аккаунт|доступ).{0,40}(заблокирован\w*|заморожен\w*|приостановлен\w*|ограничен\w*)|(во избежание|чтобы избежать).{0,30}(блокировк\w*|закрыт\w*)",
+        "Threatens to suspend or close the account",
+        18,
+    ),
 )
 
 
 GENERIC_RULES: tuple[tuple[str, str, int], ...] = (
     (
-        r"\b(urgent|immediately|within 24 hours|act now|final warning)\b|紧急|立即|緊急|segera|அவசரம்|urgente|immédiatement|dringend|عاجل|तुरंत|জরুরি|فوری|ด่วน|khẩn cấp|至急|긴급|kagyat",
+        r"\b(urgent|immediately|within 24 hours|act now|final warning)\b|紧急|立即|緊急|segera|அவசரம்|urgente|immédiatement|dringend|عاجل|तुरंत|জরুরি|فوری|ด่วน|khẩn cấp|至急|긴급|kagyat|\bexpires? (?:today|tomorrow|in \d+ (?:hours?|minutes?))\b|dalam masa \d+ jam|dalam \d+ jam|в течение \d+ час\w*|срочно|немедленно|خلال \d+ ساعة",
         "Uses urgency or time pressure",
         8,
     ),
     (
-        r"\b(dear customer|dear user|valued customer)\b|尊敬的客户|尊敬的客戶|pelanggan yang dihargai|estimado cliente|cher client|sehr geehrter kunde|prezado cliente|عزيزي العميل|प्रिय ग्राहक|প্রিয় গ্রাহক|محترم صارف|เรียนลูกค้า|kính gửi quý khách|お客様|고객님|mahal na customer",
+        r"\b(dear customer|dear user|valued customer)\b|尊敬的客户|尊敬的客戶|pelanggan yang dihargai|estimado cliente|cher client|sehr geehrter kunde|prezado cliente|عزيزي العميل|प्रिय ग्राहक|প্রিয় গ্রাহক|محترم صارف|เรียนลูกค้า|kính gửi quý khách|お客様|고객님|mahal na customer|pelanggan yang dihormati|nasabah yang terhormat|уважаемый клиент|уважаемый пользователь",
         "Uses a generic greeting",
         5,
     ),
