@@ -1,0 +1,162 @@
+[
+ {
+  "id": "P01",
+  "title": "Microsoft 365 credential phish, digit-swap sender, brand used as a subdomain, failed SPF/DKIM/DMARC",
+  "expected": "phish",
+  "min_risk": "likely_phishing",
+  "file": "P01.eml",
+  "note": ""
+ },
+ {
+  "id": "P02",
+  "title": "BEC: executive display-name spoof from a free mailbox, gift cards, reply-to switch, no links",
+  "expected": "phish",
+  "min_risk": "suspicious",
+  "file": "P02.eml",
+  "note": ""
+ },
+ {
+  "id": "P03",
+  "title": "Vendor bank-detail change in a hijacked thread, reply-to one letter off (rn -> l), pressure not to call",
+  "expected": "phish",
+  "min_risk": "suspicious",
+  "file": "P03.eml",
+  "note": ""
+ },
+ {
+  "id": "P04",
+  "title": "Payroll diversion: staff display name on a free mailbox, bank details, avoids the portal",
+  "expected": "phish",
+  "min_risk": "suspicious",
+  "file": "P04.eml",
+  "note": ""
+ },
+ {
+  "id": "P05",
+  "title": "HTML smuggling: attached .html builds a Blob from base64 and auto-downloads an .exe",
+  "expected": "phish",
+  "min_risk": "likely_phishing",
+  "file": "P05.eml",
+  "note": ""
+ },
+ {
+  "id": "P06",
+  "title": "Double-extension executable (pdf.exe) with a password hint in the body",
+  "expected": "phish",
+  "min_risk": "likely_phishing",
+  "file": "P06.eml",
+  "note": ""
+ },
+ {
+  "id": "P07",
+  "title": "Macro-enabled Word document with an 'Enable Content' instruction",
+  "expected": "phish",
+  "min_risk": "likely_phishing",
+  "file": "P07.eml",
+  "note": ""
+ },
+ {
+  "id": "P08",
+  "title": "Password-protected zip carrying an ISO disk image, legal-threat lure",
+  "expected": "phish",
+  "min_risk": "likely_phishing",
+  "file": "P08.eml",
+  "note": ""
+ },
+ {
+  "id": "P09",
+  "title": "Callback phishing: fake invoice, phone number to dispute, no link at all",
+  "expected": "phish",
+  "min_risk": "suspicious",
+  "file": "P09.eml",
+  "note": ""
+ },
+ {
+  "id": "P10",
+  "title": "DocuSign lure through a Google open redirect and a bit.ly link whose visible text names docusign.com",
+  "expected": "phish",
+  "min_risk": "suspicious",
+  "file": "P10.eml",
+  "note": ""
+ },
+ {
+  "id": "P11",
+  "title": "IDN homoglyph (xn--pypal) behind a paypal.com anchor text, right-to-left override in a link, failed authentication",
+  "expected": "phish",
+  "min_risk": "likely_phishing",
+  "file": "P11.eml",
+  "note": ""
+ },
+ {
+  "id": "P12",
+  "title": "Shared-document lure: visible link says drive.google.com, real target is a Google Sites page",
+  "expected": "phish",
+  "min_risk": "suspicious",
+  "file": "P12.eml",
+  "note": ""
+ },
+ {
+  "id": "P13",
+  "title": "Crypto wallet phish asking for the recovery phrase",
+  "expected": "phish",
+  "min_risk": "likely_phishing",
+  "file": "P13.eml",
+  "note": ""
+ },
+ {
+  "id": "P14",
+  "title": "French tax-refund phish with a lookalike domain and a 48-hour deadline",
+  "expected": "phish",
+  "min_risk": "suspicious",
+  "file": "P14.eml",
+  "note": ""
+ },
+ {
+  "id": "P15",
+  "title": "Delivery-fee scam: hidden white-on-white filler text, tracking pixel, HTML says 1.99 while plain text differs in framing",
+  "expected": "phish",
+  "min_risk": "suspicious",
+  "file": "P15.eml",
+  "note": ""
+ },
+ {
+  "id": "B01",
+  "title": "Legitimate marketing newsletter with urgency wording, tracking parameters and list headers",
+  "expected": "benign",
+  "min_risk": "low",
+  "file": "B01.eml",
+  "note": ""
+ },
+ {
+  "id": "B02",
+  "title": "Legitimate bank security notice: passes SPF/DKIM/DMARC, tells you never to share codes",
+  "expected": "benign",
+  "min_risk": "low",
+  "file": "B02.eml",
+  "note": ""
+ },
+ {
+  "id": "B03",
+  "title": "Legitimate internal password-expiry notice from the company's own domain with a link to its own SSO",
+  "expected": "benign",
+  "min_risk": "low",
+  "file": "B03.eml",
+  "note": "Reads like a credential lure but is authenticated and on-domain."
+ },
+ {
+  "id": "B04",
+  "title": "Genuine DocuSign request: authenticated docusign.net sender and matching links",
+  "expected": "benign",
+  "min_risk": "low",
+  "file": "B04.eml",
+  "note": ""
+ },
+ {
+  "id": "B05",
+  "title": "Genuine Google Calendar invitation with an .ics attachment",
+  "expected": "benign",
+  "min_risk": "low",
+  "file": "B05.eml",
+  "note": ""
+ }
+]

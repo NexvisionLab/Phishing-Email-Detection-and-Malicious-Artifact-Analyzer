@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-RULE_PACK_VERSION = "2026.09.1"
+RULE_PACK_VERSION = "2026.09.2"
 
 
 @dataclass(frozen=True, slots=True)
@@ -270,6 +270,50 @@ SCAM_RULES: tuple[ScamRule, ...] = (
         r"\b(change|updated?|new)\b.{0,32}\b(bank|banking|payment)\b.{0,24}\b(detail|account)s?\b(?!.{0,30}\bsettings\b)",
         "Requests changed banking details",
         28,
+    ),
+    ScamRule(
+        "bec.en.payroll",
+        "Business email compromise",
+        "en",
+        r"\b(?:i|we)\b.{0,20}\b(?:chang(?:ed|ing)|switch(?:ed|ing)|updat(?:ed|ing)|clos(?:ed|ing))\b.{0,30}\b(?:banks?|bank account)\b"
+        r"|\b(?:update|change|redirect|switch)\b.{0,25}\bmy\b.{0,20}\b(?:direct deposit|payroll|paycheck|salary)\b",
+        "Requests a payroll or direct-deposit change",
+        26,
+    ),
+    ScamRule(
+        "crypto.en.seedphrase",
+        "Crypto wallet phishing",
+        "en",
+        r"\b(?:seed phrase|recovery phrase|secret recovery phrase|recovery words|mnemonic|12[- ]word|24[- ]word|private key|keystore)\b.{0,90}\b(?:verify|confirm|enter|provide|submit|send|restore|validate|reply|share|type|paste)\b"
+        r"|\b(?:verify|confirm|enter|provide|submit|send|restore|validate|share|type|paste)\b.{0,60}\b(?:seed phrase|recovery phrase|secret recovery phrase|recovery words|mnemonic|12[- ]word|24[- ]word|private key|keystore)\b",
+        "Asks for a wallet recovery phrase",
+        40,
+    ),
+    ScamRule(
+        "crypto.en.walletlocked",
+        "Crypto wallet phishing",
+        "en",
+        r"\b(?:your|the)\s+(?:\w+\s+){0,2}wallet\b.{0,30}\b(?:suspended|locked|restricted|disabled|frozen)\b",
+        "Says a crypto wallet is suspended",
+        20,
+    ),
+    ScamRule(
+        "gov.fr.taxrefund",
+        "Authority impersonation",
+        "fr",
+        r"(?:remboursement|rembourser).{0,80}(?:imp[oô]ts?|fisc|dgfip|tr[eé]sor public)|(?:imp[oô]ts?|fisc|dgfip).{0,80}(?:remboursement|rembours[eé])",
+        "Tax-refund lure",
+        22,
+        ("FR",),
+    ),
+    ScamRule(
+        "gov.fr.bankdetails",
+        "Authority impersonation",
+        "fr",
+        r"(?:confirm|renseign|v[eé]rifi|mett|saisi)\w*.{0,40}coordonn[eé]es bancaires|coordonn[eé]es bancaires.{0,60}(?:avant|dans les|sous)\s+\d+\s*(?:heures|jours)",
+        "Asks for bank details on a deadline",
+        22,
+        ("FR",),
     ),
     ScamRule(
         "bec.giftcards",
@@ -687,16 +731,9 @@ SCAM_RULES: tuple[ScamRule, ...] = (
         "Coercive demand for payment",
         28,
     ),
-    # Wallet recovery phrases and QR-code lures. Nobody legitimate asks for a recovery phrase, and a QR code in an email
-    # that must be scanned to "verify" or "re-enrol" is the usual way to move the victim to a phone with no link to inspect.
-    ScamRule(
-        "wallet.en.phrase",
-        "Investment or crypto scam",
-        "en",
-        r"\b(recovery phrase|seed phrase|secret phrase|secret recovery|(?:12|24)[- ]word|private key|keystore)\b.{0,70}\b(enter|provide|send|share|validate|verify|restore|type|submit|paste)\b|\b(enter|provide|send|share|validate|verify|restore|type|submit|paste)\b.{0,70}\b(recovery phrase|seed phrase|secret phrase|secret recovery|(?:12|24)[- ]word|private key)\b",
-        "Asks for a wallet recovery phrase or private key",
-        32,
-    ),
+    # QR-code lures: an email that must be scanned with a phone to "verify" or "re-enrol" is a way to move the victim off a
+    # screen with no link to inspect. (`crypto.en.seedphrase` above already covers recovery-phrase requests; it is widened
+    # just below to also catch "private key"/"keystore" wording, which it did not.)
     ScamRule(
         "qr.en.verify",
         "Credential phishing",
