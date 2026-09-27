@@ -1,0 +1,29 @@
+From: "Accounts - Northwind Supplies" <accounts@northwind-supplies.co>
+To: ap@acme-corp.com
+Subject: Re: Invoice 4471 - updated remittance details
+Date: Thu, 24 Sep 2026 09:30:00 +0000
+Message-ID: <1809280701@mail.example.net>
+Reply-To: accounts@northwlnd-supplies.co
+Authentication-Results: mx.corp.example.org; spf=pass
+ smtp.mailfrom=northwind-supplies.co; dkim=pass header.d=northwind-supplies.co
+In-Reply-To: <a1b2c3@mail.acme-corp.com>
+References: <a1b2c3@mail.acme-corp.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Hi,
+
+Please note our bank has changed. Kindly send the outstanding payment of USD =
+48,250.00 for invoice 4471 to the new account below and confirm by return.
+
+Bank: Global Trust Bank
+Account name: Northwind Supplies Ltd
+IBAN: DE44 5001 0517 5407 3249 31
+SWIFT: GTBKDEFF
+
+Please ignore the previous details. Do not call the old number, our lines are=
+ being migrated.
+
+Regards,
+Accounts Team

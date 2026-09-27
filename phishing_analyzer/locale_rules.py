@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-RULE_PACK_VERSION = "2026.09.1"
+RULE_PACK_VERSION = "2026.09.2"
 
 
 @dataclass(frozen=True, slots=True)
@@ -265,6 +265,50 @@ SCAM_RULES: tuple[ScamRule, ...] = (
         r"\b(change|updated?|new)\b.{0,32}\b(bank|banking|payment)\b.{0,24}\b(detail|account)",
         "Requests changed banking details",
         28,
+    ),
+    ScamRule(
+        "bec.en.payroll",
+        "Business email compromise",
+        "en",
+        r"\b(?:i|we)\b.{0,20}\b(?:chang(?:ed|ing)|switch(?:ed|ing)|updat(?:ed|ing)|clos(?:ed|ing))\b.{0,30}\b(?:banks?|bank account)\b"
+        r"|\b(?:update|change|redirect|switch)\b.{0,25}\bmy\b.{0,20}\b(?:direct deposit|payroll|paycheck|salary)\b",
+        "Requests a payroll or direct-deposit change",
+        26,
+    ),
+    ScamRule(
+        "crypto.en.seedphrase",
+        "Crypto wallet phishing",
+        "en",
+        r"\b(?:seed phrase|recovery phrase|secret recovery phrase|recovery words|mnemonic|12[- ]word|24[- ]word)\b.{0,90}\b(?:verify|confirm|enter|provide|submit|send|restore|validate|reply)\b"
+        r"|\b(?:verify|confirm|enter|provide|submit|send|restore|validate)\b.{0,60}\b(?:seed phrase|recovery phrase|secret recovery phrase|recovery words|mnemonic|12[- ]word|24[- ]word)\b",
+        "Asks for a wallet recovery phrase",
+        40,
+    ),
+    ScamRule(
+        "crypto.en.walletlocked",
+        "Crypto wallet phishing",
+        "en",
+        r"\b(?:your|the)\s+(?:\w+\s+){0,2}wallet\b.{0,30}\b(?:suspended|locked|restricted|disabled|frozen)\b",
+        "Says a crypto wallet is suspended",
+        20,
+    ),
+    ScamRule(
+        "gov.fr.taxrefund",
+        "Authority impersonation",
+        "fr",
+        r"(?:remboursement|rembourser).{0,80}(?:imp[oô]ts?|fisc|dgfip|tr[eé]sor public)|(?:imp[oô]ts?|fisc|dgfip).{0,80}(?:remboursement|rembours[eé])",
+        "Tax-refund lure",
+        22,
+        ("FR",),
+    ),
+    ScamRule(
+        "gov.fr.bankdetails",
+        "Authority impersonation",
+        "fr",
+        r"(?:confirm|renseign|v[eé]rifi|mett|saisi)\w*.{0,40}coordonn[eé]es bancaires|coordonn[eé]es bancaires.{0,60}(?:avant|dans les|sous)\s+\d+\s*(?:heures|jours)",
+        "Asks for bank details on a deadline",
+        22,
+        ("FR",),
     ),
     ScamRule(
         "bec.giftcards",

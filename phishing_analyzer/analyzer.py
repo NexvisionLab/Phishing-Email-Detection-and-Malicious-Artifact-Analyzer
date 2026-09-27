@@ -173,7 +173,13 @@ def analyze_email(
             100, sum(f.points for f in header_findings + advanced_header_findings if f.source in {"headers", "thread"})
         ),
         message_intent=min(100, sum(f.points for f in content_findings + advanced_intent_findings)),
-        destination_risk=max((item.score for item in selected), default=0),
+        # A link whose visible text names one place while it goes to another, and active HTML (forms, scripts), are
+        # destination evidence too: they were reported as findings but never reached the score, so a message built on a
+        # display-text trick could still read as low risk.
+        destination_risk=min(
+            100,
+            max((item.score for item in selected), default=0) + sum(f.points for f in mismatch_findings + html_findings),
+        ),
         payload_risk=max((item.score for item in attachment_results), default=0),
     )
     active_dimensions = sum(

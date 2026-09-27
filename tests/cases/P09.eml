@@ -1,0 +1,21 @@
+From: "PayPal Billing" <service@paypal-billing-help.net>
+To: j.tan@acme-corp.com
+Subject: Invoice INV-7788341: $499.99 charged to your account
+Date: Thu, 24 Sep 2026 09:30:00 +0000
+Message-ID: <7769178790@mail.example.net>
+Authentication-Results: mx.corp.example.org; spf=softfail
+ smtp.mailfrom=paypal-billing-help.net; dkim=none; dmarc=fail
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Hello,
+
+A payment of $499.99 to GeekSquad Protection Services was processed on 24 Sep.
+
+If you did not authorize this charge, call our dispute line immediately at +1=
+ (888) 555-0142 (toll free). Our agents are available 24/7 to cancel the orde=
+r and refund you.
+
+Invoice: INV-7788341
+PayPal Billing
