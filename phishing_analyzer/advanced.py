@@ -7,7 +7,7 @@ import unicodedata
 from dataclasses import dataclass
 from email.utils import parseaddr
 
-from .domains import BRANDS, registrable_domain
+from .domains import BRANDS, brand_impersonation, registrable_domain
 from .models import Finding
 
 ADVANCED_RULE_PACK_VERSION = "2026.09.23.1"
@@ -272,6 +272,20 @@ def _header_impersonation(headers: dict[str, str]) -> tuple[list[Finding], dict[
                 "high",
                 24,
                 f"Claimed: {', '.join(brand_hits)}; sender domain: {from_domain or 'unavailable'}",
+                "headers",
+            )
+        )
+    # The sender's own domain can imitate a brand (micr0soft-online.com) even when the display name says nothing: links
+    # already got this check, the address the message claims to come from did not.
+    sender_hits = brand_impersonation(from_domain) if from_domain else []
+    if sender_hits:
+        findings.append(
+            Finding(
+                "SENDER_DOMAIN_BRAND_IMPERSONATION",
+                "Sender domain imitates a brand it does not own",
+                "high",
+                24,
+                f"Sender domain: {from_domain}; imitates: {', '.join(hit['brand'] for hit in sender_hits)}",
                 "headers",
             )
         )

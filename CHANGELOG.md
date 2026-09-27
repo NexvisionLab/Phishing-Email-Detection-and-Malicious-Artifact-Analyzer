@@ -2,6 +2,32 @@
 
 ## Unreleased
 
+- Case review (2026-09-27): twenty realistic emails (fifteen attacks, five tricky legitimate messages; `tests/make_cases.py`,
+  `tests/run_cases.py`) plus a malformed-input probe (`tests/fuzz_probe.py`) turned up these bugs, all fixed with regression
+  tests in `tests/test_case_review.py`:
+  - **Crash:** a message declaring a made-up charset (`charset=nonsense-9`) raised `LookupError`, because the fallback that
+    recovers from an undecodable part decoded with the same unknown name. It now falls back to UTF-8.
+  - **Non-ASCII text destroyed:** for any message that had headers, `part.get_content()` decoded a part with no charset as
+    ASCII, so `café` became a replacement character and Chinese became the literal text `\u4f60\u597d` before any rule saw it.
+    An uploaded `.eml` with a UTF-8 body and no charset lost every non-ASCII character too. Text is now kept as pasted, or
+    decoded from its bytes with the declared charset, or UTF-8.
+  - **Link mismatch never scored:** `DISPLAY_LINK_MISMATCH` (25 points) and the active-HTML findings were reported but never
+    reached any score dimension, so a message built on "the text says one site, the link goes to another" could still read
+    low. They now count toward the destination score.
+  - **Link mismatch compared whole strings:** tracking parameters on a legitimate link raised it, and link text that was just
+    a domain (`paypal.com`) did not. It now compares the site the text names with the site the link opens (file names such as
+    `invoice.pdf` are not domains). `sites.google.com` shown as `drive.google.com` is a mismatch even though both are
+    `google.com`.
+  - **Sender domain never checked for brand look-alikes:** `micr0soft-online.com` was flagged only as a link. The From
+    domain now gets the same check (`SENDER_DOMAIN_BRAND_IMPERSONATION`).
+  - **Missing rules** (rule pack 2026.09.2): payroll or direct-deposit diversion, a request for a wallet recovery phrase
+    (and a "wallet suspended" notice), and French tax-refund lures with a bank-details deadline (with or without accents).
+  - **Disguised wording:** zero-width characters were already removed but lookalike Cyrillic or Greek letters mixed into a
+    Latin word, letters separated by spaces (`s e e d   p h r a s e`) and runs of spaces hid keywords from the rules. Words
+    that mix Latin with lookalike letters are folded, spaced letters are joined and repeated spaces collapsed; words
+    written entirely in another script (real Russian or Greek text) are left alone.
+  - Known and not fixed: a 1.9 MB message takes about 6 seconds and a message with 10,000 header lines about 5 seconds.
+
 - QR codes: new `phishing_analyzer.qr` module. `decode_qr_image` reads every code in an image (OpenCV, with `pyzbar` as an
   optional fallback, since each misses codes the other reads, and an inverted retry for light-on-dark codes) and never
   raises. `classify_payload` says what scanning a code would do (link, Wi-Fi, payment, SMS, call, authenticator setup,

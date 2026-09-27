@@ -1,0 +1,33 @@
+From: "Parcel Service" <no-reply@postal-redelivery-sg.com>
+To: j.tan@acme-corp.com
+Subject: Your parcel could not be delivered - fee 1.99 SGD
+Date: Thu, 24 Sep 2026 09:30:00 +0000
+Message-ID: <4839953483@mail.example.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="===============2069254228686608037=="
+
+--===============2069254228686608037==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Priya Nair sent you a document to review and sign. https://na3.docusign.net/S=
+igning/EmailStart.aspx?a=3D1f2e3d4c
+
+--===============2069254228686608037==
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+<html><body>
+<div style=3D"color:#ffffff;font-size:1px;line-height:1px">invoice statement =
+meeting agenda schedule newsletter report minutes quarterly review team updat=
+e thank you regards</div>
+<p>Your parcel <b>SG88213</b> could not be delivered. A redelivery fee of <b>=
+SGD 1.99</b> is required.</p>
+<a href=3D"https://postal-redelivery-sg.com/pay/8841" style=3D"background:#e6=
+0000;color:#fff;padding:10px">Pay now</a>
+<img src=3D"https://track.postal-redelivery-sg.com/px.gif?e=3Dj.tan" width=3D=
+"1" height=3D"1"></body></html>
+
+--===============2069254228686608037==--

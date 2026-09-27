@@ -1,0 +1,22 @@
+From: "Example Bank Alerts" <alerts@mail.example-bank.com>
+To: j.tan@acme-corp.com
+Subject: New sign-in to your account
+Date: Thu, 24 Sep 2026 09:30:00 +0000
+Message-ID: <7257737047@mail.example.net>
+Authentication-Results: mx.corp.example.org; spf=pass
+ smtp.mailfrom=mail.example-bank.com; dkim=pass header.d=example-bank.com;
+ dmarc=pass header.from=example-bank.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Hello J. Tan,
+
+We noticed a new sign-in to Example Bank Online from a Windows device in Sing=
+apore on 24 Sep 2026, 09:12.
+
+If this was you, no action is needed. If you don't recognise it, call the num=
+ber on the back of your card or visit a branch. We will never ask for your pa=
+ssword, PIN or one-time code by email, SMS or phone.
+
+Example Bank Security
