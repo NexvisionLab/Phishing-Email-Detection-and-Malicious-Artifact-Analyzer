@@ -14,7 +14,7 @@ pydantic==2.13.5
 pydantic-core==2.46.5
 python-dotenv==1.2.3
 PyYAML==6.0.3
-reportlab==4.5.1
+reportlab==5.0.1
 starlette==1.6.0
 typing-extensions==4.16.0
 typing-inspection==0.4.4
