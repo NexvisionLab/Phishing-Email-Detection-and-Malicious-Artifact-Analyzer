@@ -8,16 +8,18 @@ import time
 import traceback
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from phishing_analyzer.analyzer import analyze_email  # noqa: E402
+from phishing_analyzer.analyzer import analyze_email
 
 HERE = os.path.join(os.path.dirname(__file__), "cases")
 ORDER = {"low": 0, "suspicious": 1, "likely_phishing": 2, "high": 3}
-manifest = json.load(open(os.path.join(HERE, "manifest.json"), encoding="utf-8"))
-want = set(a for a in sys.argv[1:])
+with open(os.path.join(HERE, "manifest.json"), encoding="utf-8") as fh:
+    manifest = json.load(fh)
+want = set(sys.argv[1:])
 
 ok = 0
 for c in manifest:
-    raw = open(os.path.join(HERE, c["file"]), "rb").read().decode("utf-8", "replace")
+    with open(os.path.join(HERE, c["file"]), "rb") as fh:
+        raw = fh.read().decode("utf-8", "replace")
     t0 = time.time()
     try:
         r = analyze_email(raw, network_enabled=False).to_dict()
