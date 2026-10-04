@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- CI is green again: the `ruff check` step had failed on every run since 2026-09-27 (15 errors, all in the case-review helper
+  scripts under `tests/`: `fuzz_probe.py`, `make_cases.py`, `run_cases.py`, `test_case_review.py`). Because `ruff` runs before
+  `mypy`, `bandit`, `pip-audit` and the build in `ci.yml`, none of those had run in CI since then; all pass locally on the
+  fixed code (`pytest` 263 passed, `ruff`, `mypy`, `bandit`, `pip-audit`, `python -m build`). Changes are lint-only: files opened
+  with context managers, unused `noqa` comments and an unused import removed, imports sorted, `datetime.UTC`, and the
+  zero-width space and right-to-left override characters in the test emails written as `​` / `‮` escapes (same
+  characters, now visible in the source). Regenerating the 20 case emails gives the same content as before apart from the
+  random `Message-ID`, MIME boundaries and zip timestamps, which change on every run.
+
 - Credential-phishing coverage for Malay, Indonesian, Arabic and Russian bank-style lures, and a QR-code-in-email lure.
   Found by running 25 phishing emails in many languages plus 8 genuine emails through the checker: a Malay ("Akaun anda
   telah digantung"), Indonesian, Arabic and Russian bank-account-suspension email each scored Low, because the existing

@@ -32,12 +32,14 @@ def codes(result):
 
 
 # ---------------------------------------------------------------- the twenty cases
-MANIFEST = json.load(open(os.path.join(CASES, "manifest.json"), encoding="utf-8"))
+with open(os.path.join(CASES, "manifest.json"), encoding="utf-8") as _fh:
+    MANIFEST = json.load(_fh)
 
 
 @pytest.mark.parametrize("case", MANIFEST, ids=[c["id"] for c in MANIFEST])
 def test_case(case):
-    raw = open(os.path.join(CASES, case["file"]), "rb").read()
+    with open(os.path.join(CASES, case["file"]), "rb") as fh:
+        raw = fh.read()
     result = risk(raw)
     if case["expected"] == "phish":
         assert ORDER[result.risk] >= ORDER[case["min_risk"]], (case["title"], result.risk, result.score)

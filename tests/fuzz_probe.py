@@ -7,7 +7,7 @@ import time
 import traceback
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from phishing_analyzer.analyzer import analyze_email  # noqa: E402
+from phishing_analyzer.analyzer import analyze_email
 
 HDR = "From: A <a@example.org>\nTo: b@example.org\nSubject: hi\nDate: Thu, 24 Sep 2026 09:30:00 +0000\n"
 
@@ -50,8 +50,8 @@ CASES = {
 }
 
 # a deeply repeated zip entry list
-import io  # noqa: E402
-import zipfile  # noqa: E402
+import io
+import zipfile
 
 bio = io.BytesIO()
 with zipfile.ZipFile(bio, "w", zipfile.ZIP_DEFLATED) as z:
@@ -74,7 +74,7 @@ for name, raw in CASES.items():
 
 print("\n=== disguised versions (want at least suspicious)")
 DISGUISED = {
-    "zero-width split keywords": HDR + "\nPlease ve​rify your acc​ount now: https://secure-login.example.com/verify",
+    "zero-width split keywords": HDR + "\nPlease ve\u200brify your acc\u200bount now: https://secure-login.example.com/verify",
     "homoglyph keywords (cyrillic a/e/o)": HDR + "\nPlеаse vеrify yоur аccоunt: https://secure-login.example.com/verify",
     "seed phrase, spaced": HDR + "\nTo restore your wallet, enter your s e e d   p h r a s e at https://wallet-restore.example.com",
     "seed phrase, negated (must stay low)": HDR + "\nNever enter your seed phrase on any website. We will never ask for your recovery phrase.",
