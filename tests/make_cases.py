@@ -1,18 +1,17 @@
 """Builds 20 test emails (15 attacks, 5 tricky legitimate messages) as .eml files under tests/cases/, plus a manifest.
 The attachments are harmless stand-ins (a few bytes with the shape or name of the real thing); no domain here is a real
 brand's, and the analyzer never opens a link. Run:  python tests/make_cases.py"""
-import base64
 import io
 import json
 import os
 import zipfile
+from datetime import UTC, datetime
 from email.message import EmailMessage
 from email.utils import format_datetime
-from datetime import datetime, timezone
 
 OUT = os.path.join(os.path.dirname(__file__), "cases")
 os.makedirs(OUT, exist_ok=True)
-NOW = datetime(2026, 9, 24, 9, 30, tzinfo=timezone.utc)
+NOW = datetime(2026, 9, 24, 9, 30, tzinfo=UTC)
 CASES = []
 
 
@@ -121,7 +120,7 @@ m = base('"PayPal" <service@paypal.com>', "j.tan@acme-corp.com", "Your account h
 m.set_content("We noticed unusual activity. Sign in: https://xn--pypal-4ve.com/signin/verify")
 m.add_alternative("""<html><body><p>We noticed unusual activity.</p>
 <p><a href="https://xn--pypal-4ve.com/signin/verify">https://www.paypal.com/signin</a></p>
-<p>File: <a href="https://cdn-files.xyz/download/‮gpj.exe">Statement</a></p></body></html>""", subtype="html")
+<p>File: <a href="https://cdn-files.xyz/download/\u202egpj.exe">Statement</a></p></body></html>""", subtype="html")
 add("P11", "IDN homoglyph (xn--pypal) behind a paypal.com anchor text, right-to-left override in a link, failed authentication", "phish", "likely_phishing", m)
 
 m = base('"Ahmad Rahman" <ahmad.rahman@gmail.com>', "j.tan@acme-corp.com", "Ahmad shared 'Salary Review 2026' with you")
